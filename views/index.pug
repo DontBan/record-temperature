@@ -3,3 +3,24 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+  div
+    if user
+      div
+        a(href="/logout") #{user.username} をログアウト
+      div
+        a(href="/temperatures/new") 体温を記録する
+      - var hasTemperature = temperatures.length > 0
+      if hasTemperature
+        h3 あなたの体温の記録一覧
+        table
+          tr
+            th 体温
+            th 日時
+          each temperature in temperatures
+            tr
+              td
+                a(href=`/temperatures/${temperature.temperatureId}`) #{temperature.temperatureValue}
+              td #{temperature.createdAt}
+    else
+      div
+        a(href="/login") ログイン

@@ -9,7 +9,7 @@ const Temperature = loader.database.define('temperatures', {
     allowNull: false
   },
   temperatureValue: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.STRING,
     allowNull: false
   },
   createdBy: {
@@ -17,6 +17,10 @@ const Temperature = loader.database.define('temperatures', {
     allowNull: false
   },
   updatedAt: {
+    type: Sequelize.DATE,
+    allowNull: false
+  },
+  createdAt: {
     type: Sequelize.DATE,
     allowNull: false
   }

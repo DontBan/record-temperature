@@ -2,6 +2,8 @@
 const request = require('supertest');
 const app = require('../app');
 const passportStub = require('passport-stub');
+const Temperature = require('../models/temperature');
+const User = require('../models/user');
 
 describe('/login', () => {
   before(() => {
@@ -47,4 +49,42 @@ describe('/logout', () => {
       .expect('Location', '/')
       .expect(302, done);
   });
+});
+
+describe('/temperatures', () => {
+  before(() => {
+    passportStub.install(app);
+    passportStub.login({ id: 0, username: 'testuser' });
+  });
+
+  after(() => {
+    passportStub.logout();
+    passportStub.uninstall(app);
+  });
+
+  it('体温が記録でき、表示される', (done) => {
+    User.upsert({ userId: 0, username: 'testuser' }).then(() => {
+      request(app)
+        .post('/temperatures')
+        .send({ temperatureValue: '36.0' })
+        .expect(302)
+        .end((err, res) => {
+          const createdTemperaturePath = res.headers.location;
+          request(app)
+            .get(createdTemperaturePath)
+            .expect(/36.0/)
+            .expect(200)
+            .end((err, res) => {
+              if (err) return done(err);
+              const temperatureId = createdTemperaturePath.split('/temperatures/')[1];
+              Temperature.findById(temperatureId).then((t) => {
+                t.destroy().then(() => {
+                  if (err) return done(err);
+                  done();
+                });
+              });
+            });
+        });
+    });
+  })
 });

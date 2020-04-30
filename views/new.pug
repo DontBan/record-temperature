@@ -1,0 +1,8 @@
+extends layout
+
+block content
+  form(method="post", action="/temperatures")
+    div
+      h5 体温
+        input(type="number" name="temperatureValue" step="0.1")
+    button(type="submit") 記録する
